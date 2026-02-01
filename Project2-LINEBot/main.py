@@ -42,12 +42,22 @@ def callback():
 # 處理訊息事件
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+        # 判斷來源 ID
+    if event.source.type == "user":
+        room_id = event.source.user_id
+    elif event.source.type == "group":
+        room_id = event.source.group_id
+    elif event.source.type == "room":
+        room_id = event.source.room_id
+    else:
+        room_id = "unknown"
     # 取得使用者傳送的文字
     user_text = event.message.text
-    
-    # 這裡實作簡單的 Echo (回聲) 功能，你可以在這裡修改邏輯
-    # 例如：串接 Gemini API、查詢資料庫等
-    reply_text = f"你剛才說了：{user_text}"
+    reply_text = (
+        f"你剛才說了：{user_text}\n"
+        f"來源類型：{event.source.type}\n"
+        f"Room ID：{room_id}"
+    )
 
     # 回覆訊息給使用者
     line_bot_api.reply_message(
